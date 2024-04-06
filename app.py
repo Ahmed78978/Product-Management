@@ -3,7 +3,15 @@ from flask_sqlalchemy import SQLAlchemy
 from flask_login import LoginManager, UserMixin, login_user, logout_user, login_required
 from flask import request
 app = Flask(__name__)
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///products.db'
+username = 'mysql'
+password = 'nqXQ0ur6kodwkHe2ZryxEEHOMYvkY9w0PdJmrXFW1sM='
+hostname = 'mysql-gaaq'  # Use the actual hostname from the image you provided
+port = '3306'  # Use the actual port if different
+database = 'mysql'
+
+app.config['SQLALCHEMY_DATABASE_URI'] = f'mysql+pymysql://{username}:{password}@{hostname}:{port}/{database}'
+
+#app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///products.db'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.config['SECRET_KEY'] = 'your_secret_key'
 
@@ -22,14 +30,14 @@ class Product(db.Model):
     def __repr__(self):
         return '<Product %r>' % self.name
 
-class User(UserMixin, db.Model):
+class User_products(UserMixin, db.Model):
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(100), unique=True, nullable=False)
     password = db.Column(db.String(100), nullable=False)
 
 @login_manager.user_loader
 def load_user(user_id):
-    return User.query.get(int(user_id))
+    return User_products.query.get(int(user_id))
 
 @app.route('/', methods=['GET'])
 def index():
@@ -88,7 +96,7 @@ def login():
         username = request.form['username']
         password = request.form['password']
 
-        user = User.query.filter_by(username=username).first()
+        user = User_products.query.filter_by(username=username).first()
 
         if user:
             if user.password == password:
@@ -113,7 +121,7 @@ def register():
         username = request.form['username']
         password = request.form['password']
 
-        existing_user = User.query.filter_by(username=username).first()
+        existing_user = User_products.query.filter_by(username=username).first()
         if existing_user:
             flash('Username already exists.')
         else:
