@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Product Inventory</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <style>
+        @media screen and (max-width: 600px) {
+            table thead {
+                display: none;
+            }
+            table td {
+                display: flex;
+            }
+            table td::before {
+                content: attr(label);
+                font-weight: bold;
+                width: 120px;
+                min-width: 120px;
+            }
+        }
+    </style>
+	 <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    
+    <script>
+        window.setMobileTable = function(selector) {
+            const tableEl = document.querySelector(selector);
+            const thEls = tableEl.querySelectorAll('thead th');
+            const tdLabels = Array.from(thEls).map(el => el.innerText);
+            tableEl.querySelectorAll('tbody tr').forEach(tr => {
+                Array.from(tr.children).forEach(
+                    (td, ndx) => td.setAttribute('label', tdLabels[ndx])
+                );
+            });
+        }
+    </script>
+</head>
+<body>
+
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+  <a class="navbar-brand" href="#">Product Inventory</a>
+  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+    <span class="navbar-toggler-icon"></span>
+  </button>
+  <div class="collapse navbar-collapse" id="navbarNav">
+    <ul class="navbar-nav ml-auto">
+      <li class="nav-item active">
+        <a class="nav-link" href="{{ url_for('index') }}">Home</a>
+      </li>
+      {% if not current_user.is_authenticated %}
+      <li class="nav-item">
+        <a class="nav-link" href="{{ url_for('login') }}">Login</a>
+      </li>
+	   
+      {% else %}
+	  {% if current_user.is_authenticated %}
+      <li class="nav-item">
+        <a class="nav-link" href="{{ url_for('register') }}">Register</a>
+      </li>
+	  {% endif %}
+      <li class="nav-item">
+        <a class="nav-link" href="{{ url_for('logout') }}">Logout</a>
+      </li>
+      {% endif %}
+    </ul>
+  </div>
+</nav>
+
+<div class="container">
+    <h1 class="mt-5 mb-4"></h1>
+
+    <!-- Search form -->
+    <form action="{{ url_for('index') }}" method="GET" class="mb-3">
+        <div class="input-group">
+            <input type="text" class="form-control" placeholder="Search products..." name="query">
+            <div class="input-group-append">
+                <button class="btn btn-outline-secondary" type="submit">Search</button>
+            </div>
+			{% if current_user.is_authenticated %}
+    <a href="{{ url_for('add_product') }}" class="btn btn-success">Add Product</a>
+    {% endif %}
+        </div>
+    </form>
+
+    <table id="product-table" class="table table-striped">
+        <thead>
+        <tr>
+            <th>ID</th>
+            <th>Name</th>
+            <th>Price</th>
+            <th>Desired Inventory</th>
+            <th>Realtime Inventory</th>
+            <th>Supplier Inventory</th>
+			{% if current_user.is_authenticated %}
+            <th>Actions</th>{% endif %}
+        </tr>
+        </thead>
+        <tbody>
+        {% for product in products %}
+        <tr>
+            <td label="ID">{{ product.id }}</td>
+            <td label="Name">{{ product.name }}</td>
+            <td label="Price">{{ product.price }}</td>
+            <td label="Desired Inventory">{{ product.desired_inventory }}</td>
+            <td label="Realtime Inventory">{{ product.realtime_inventory }}</td>
+            <td label="Supplier Inventory">{{ product.supplier_inventory }}</td>
+            <td>
+			{% if current_user.is_authenticated %}
+                <div style="margin-bottom: 10px;">
+    <a href="{{ url_for('edit_product', id=product.id) }}" class="btn btn-primary btn-sm">Edit</a>
+</div>
+<div>
+    <form action="{{ url_for('delete_product', id=product.id) }}" method="post" style="display: inline-block;">
+        <button type="submit" class="btn btn-danger btn-sm">Delete</button>
+    </form>
+	
+</div>
+{% endif %}
+            </td>
+        </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+    
+</div>
+
+</body>
+</html>
