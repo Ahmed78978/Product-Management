@@ -9,9 +9,9 @@ hostname = 'mysql-gaaq'  # Use the actual hostname from the image you provided
 port = '3306'  # Use the actual port if different
 database = 'mysql'
 
-app.config['SQLALCHEMY_DATABASE_URI'] = f'mysql+pymysql://{username}:{password}@{hostname}:{port}/{database}'
+#app.config['SQLALCHEMY_DATABASE_URI'] = f'mysql+pymysql://{username}:{password}@{hostname}:{port}/{database}'
 
-#app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///products.db'
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///products.db'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.config['SECRET_KEY'] = 'your_secret_key'
 
@@ -125,7 +125,7 @@ def register():
         if existing_user:
             flash('Username already exists.')
         else:
-            new_user = User(username=username, password=password)
+            new_user = User_products(username=username, password=password)
             db.session.add(new_user)
             db.session.commit()
             flash('Registration successful. Please log in.')
